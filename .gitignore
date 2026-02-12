@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.env.local
+src/component/_generated/
+example/convex/_generated/
+reagan_*

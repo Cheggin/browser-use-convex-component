@@ -1,0 +1,53 @@
+{
+  "name": "@anthropic/browser-use-convex-component",
+  "version": "0.1.0",
+  "description": "A Convex component for Browser Use Cloud - automate browser tasks with AI agents",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/client/index.js",
+  "types": "./dist/client/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./convex.config.js": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
+    },
+    "./_generated/component.js": {
+      "types": "./dist/component/_generated/component.d.ts",
+      "default": "./dist/component/_generated/component.js"
+    },
+    "./test": {
+      "types": "./src/test.ts",
+      "default": "./src/test.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build:codegen": "npx convex codegen --component-dir ./src/component",
+    "build": "npm run build:codegen && tsc",
+    "dev:codegen": "npx convex codegen --component-dir ./src/component --watch",
+    "dev:tsc": "tsc --watch",
+    "dev:backend": "cd example && npx convex dev",
+    "dev": "npm-run-all --parallel dev:codegen dev:tsc dev:backend",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "convex": "^1.31.7"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "convex": "^1.31.7",
+    "convex-test": "^0.0.41",
+    "npm-run-all": "^4.1.5",
+    "typescript": "~5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
