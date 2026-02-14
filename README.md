@@ -4,29 +4,26 @@ A [Convex](https://convex.dev) component that wraps the [Browser Use Cloud API](
 
 ## Features
 
-- **Task Management** - Create, poll, pause, resume, and stop browser automation tasks
+- **Task Management** - Create, monitor, and stop browser automation tasks
 - **Session Management** - Create persistent browser sessions with proxy support
 - **Profile Management** - Manage browser profiles for authentication persistence
 - **Reactive Queries** - All task and session data stored in Convex for real-time subscriptions
-- **Polling** - Built-in `createAndPoll` for fire-and-forget task execution
 
 ## Installation
 
-### 1. Install the component
-
-For local development, add the component source to your project. For NPM packages, install via:
-
 ```bash
-npm install @anthropic/browser-use-convex-component
+npm install browser-use-convex-component
 ```
 
-### 2. Configure your app
+## Setup
+
+### 1. Configure your app
 
 In your `convex/convex.config.ts`:
 
 ```typescript
 import { defineApp } from "convex/server";
-import browserUse from "@anthropic/browser-use-convex-component/convex.config.js";
+import browserUse from "browser-use-convex-component/convex.config.js";
 
 const app = defineApp();
 app.use(browserUse);
@@ -34,7 +31,7 @@ app.use(browserUse);
 export default app;
 ```
 
-### 3. Set your API key
+### 2. Set your API key
 
 Set the `BROWSER_USE_API_KEY` environment variable in your Convex deployment:
 
@@ -47,29 +44,13 @@ npx convex env set BROWSER_USE_API_KEY bu_your_api_key_here
 ### Initialize the client
 
 ```typescript
-import { BrowserUse } from "@anthropic/browser-use-convex-component";
+import { BrowserUse } from "browser-use-convex-component";
 import { components } from "./_generated/api.js";
 
 const browserUse = new BrowserUse(components.browserUse);
 ```
 
-### Create and poll a task (fire-and-forget)
-
-```typescript
-export const runTask = action({
-  args: { task: v.string() },
-  returns: v.any(),
-  handler: async (ctx, args) => {
-    const result = await browserUse.createTaskAndPoll(ctx, {
-      task: args.task,
-    });
-    // result: { taskId, externalId, status, output, isSuccess }
-    return result;
-  },
-});
-```
-
-### Create a task (non-blocking)
+### Create a task
 
 ```typescript
 export const startTask = action({
@@ -79,7 +60,6 @@ export const startTask = action({
     const { taskId, externalId } = await browserUse.createTask(ctx, {
       task: args.task,
       startUrl: "https://example.com",
-      llm: "gemini-2.5-flash",
     });
     return { taskId, externalId };
   },
@@ -94,6 +74,18 @@ export const listTasks = query({
   returns: v.any(),
   handler: async (ctx) => {
     return await browserUse.listTasks(ctx);
+  },
+});
+```
+
+### Check task status
+
+```typescript
+export const checkTask = action({
+  args: { externalId: v.string() },
+  returns: v.any(),
+  handler: async (ctx, args) => {
+    return await browserUse.fetchTaskStatus(ctx, args);
   },
 });
 ```
@@ -124,23 +116,19 @@ export const listProfiles = action({
 });
 ```
 
-## Client API Reference
+## API Reference
 
 ### Tasks
 
 | Method | Type | Description |
 |--------|------|-------------|
 | `createTask(ctx, args)` | Action | Create a browser automation task |
-| `createTaskAndPoll(ctx, args)` | Action | Create and wait for task completion |
 | `getTask(ctx, { taskId })` | Query | Get task from local DB |
 | `listTasks(ctx, opts?)` | Query | List tasks with optional filters |
 | `getTaskSteps(ctx, { taskId })` | Query | Get step-by-step execution details |
 | `fetchTaskStatus(ctx, { externalId })` | Action | Fetch latest status from API |
-| `fetchTaskDetail(ctx, { externalId })` | Action | Fetch full details from API |
+| `fetchTaskDetail(ctx, { externalId })` | Action | Fetch full details and steps from API |
 | `stopTask(ctx, { externalId })` | Action | Stop a running task |
-| `pauseTask(ctx, { externalId })` | Action | Pause a running task |
-| `resumeTask(ctx, { externalId })` | Action | Resume a paused task |
-| `pollTaskUntilDone(ctx, { externalId })` | Action | Poll until terminal status |
 
 ### Sessions
 
@@ -164,14 +152,12 @@ export const listProfiles = action({
 
 ## Task Options
 
-When creating tasks, you can pass these options:
-
 | Option | Type | Description |
 |--------|------|-------------|
 | `task` | `string` | The instruction for the AI agent (required) |
+| `llm` | `string` | AI model (default: `browser-use-2.0`) |
 | `sessionId` | `string` | Existing session to use |
 | `startUrl` | `string` | Initial URL to navigate to |
-| `llm` | `string` | AI model (default: `gemini-2.5-flash`) |
 | `maxSteps` | `number` | Max execution steps (default: 100) |
 | `flashMode` | `boolean` | Accelerated execution mode |
 | `thinking` | `boolean` | Extended reasoning |
