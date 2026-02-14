@@ -158,16 +158,19 @@ export const list = query({
   returns: v.any(),
   handler: async (ctx, args) => {
     let q;
-    if (args.status) {
-      q = ctx.db
-        .query("tasks")
-        .withIndex("byStatus", (idx) => idx.eq("status", args.status!));
-    } else if (args.sessionId) {
+    if (args.sessionId) {
       q = ctx.db
         .query("tasks")
         .withIndex("bySessionId", (idx) =>
           idx.eq("sessionId", args.sessionId!),
         );
+      if (args.status) {
+        q = q.filter((f) => f.eq(f.field("status"), args.status!));
+      }
+    } else if (args.status) {
+      q = ctx.db
+        .query("tasks")
+        .withIndex("byStatus", (idx) => idx.eq("status", args.status!));
     } else {
       q = ctx.db.query("tasks");
     }
