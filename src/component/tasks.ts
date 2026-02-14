@@ -415,66 +415,6 @@ export const stop = action({
   },
 });
 
-export const pause = action({
-  args: {
-    apiKey: v.string(),
-    externalId: v.string(),
-  },
-  returns: v.null(),
-  handler: async (ctx, args): Promise<null> => {
-    await browserUseRequest({
-      method: "PATCH",
-      path: `/api/v2/tasks/${args.externalId}`,
-      apiKey: args.apiKey,
-      body: { action: "pause" },
-    });
-
-    const existingTask = (await ctx.runQuery(internal.tasks.getByExternalId, {
-      externalId: args.externalId,
-    })) as Record<string, unknown> | null;
-
-    if (existingTask) {
-      await ctx.runMutation(internal.tasks.saveTask, {
-        externalId: args.externalId,
-        task: (existingTask.task as string) ?? "",
-        status: "paused",
-      });
-    }
-
-    return null;
-  },
-});
-
-export const resume = action({
-  args: {
-    apiKey: v.string(),
-    externalId: v.string(),
-  },
-  returns: v.null(),
-  handler: async (ctx, args): Promise<null> => {
-    await browserUseRequest({
-      method: "PATCH",
-      path: `/api/v2/tasks/${args.externalId}`,
-      apiKey: args.apiKey,
-      body: { action: "resume" },
-    });
-
-    const existingTask = (await ctx.runQuery(internal.tasks.getByExternalId, {
-      externalId: args.externalId,
-    })) as Record<string, unknown> | null;
-
-    if (existingTask) {
-      await ctx.runMutation(internal.tasks.saveTask, {
-        externalId: args.externalId,
-        task: (existingTask.task as string) ?? "",
-        status: "started",
-      });
-    }
-
-    return null;
-  },
-});
-
 export const pollUntilDone = action({
   args: {
     apiKey: v.string(),

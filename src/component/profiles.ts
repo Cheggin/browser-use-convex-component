@@ -9,7 +9,7 @@ interface ProfileResponse {
   name: string | null;
   createdAt: string;
   lastUsedAt: string | null;
-  cookieDomains: string[];
+  cookieDomains: string[] | null;
 }
 
 interface ProfileListResponse {
@@ -73,7 +73,7 @@ export const list = action({
       name: p.name ?? undefined,
       createdAt: p.createdAt,
       lastUsedAt: p.lastUsedAt ?? undefined,
-      cookieDomains: p.cookieDomains,
+      cookieDomains: p.cookieDomains ?? [],
     }));
   },
 });
@@ -102,7 +102,7 @@ export const getProfile = action({
       name: response.name ?? undefined,
       createdAt: response.createdAt,
       lastUsedAt: response.lastUsedAt ?? undefined,
-      cookieDomains: response.cookieDomains,
+      cookieDomains: response.cookieDomains ?? [],
     };
   },
 });

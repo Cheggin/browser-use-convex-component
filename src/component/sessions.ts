@@ -194,7 +194,7 @@ export const stop = action({
       method: "PATCH",
       path: `/api/v2/sessions/${args.externalId}`,
       apiKey: args.apiKey,
-      body: { status: "stopped" },
+      body: { action: "stop" },
     });
 
     const existing = (await ctx.runQuery(internal.sessions.getByExternalId, {

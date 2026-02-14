@@ -139,20 +139,6 @@ export class BrowserUse {
     });
   }
 
-  async pauseTask(ctx: ActionCtx, args: { externalId: string }) {
-    return await ctx.runAction(this.component.tasks.pause, {
-      apiKey: this.apiKey,
-      externalId: args.externalId,
-    });
-  }
-
-  async resumeTask(ctx: ActionCtx, args: { externalId: string }) {
-    return await ctx.runAction(this.component.tasks.resume, {
-      apiKey: this.apiKey,
-      externalId: args.externalId,
-    });
-  }
-
   async pollTaskUntilDone(ctx: ActionCtx, args: { externalId: string }) {
     return await ctx.runAction(this.component.tasks.pollUntilDone, {
       apiKey: this.apiKey,
