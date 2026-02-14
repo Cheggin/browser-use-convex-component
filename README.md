@@ -162,11 +162,16 @@ export const listProfiles = action({
 | `flashMode` | `boolean` | Accelerated execution mode |
 | `thinking` | `boolean` | Extended reasoning |
 | `vision` | `boolean \| "auto"` | Visual recognition |
+| `highlightElements` | `boolean` | Highlight interactive elements |
+| `systemPromptExtension` | `string` | Append to the system prompt |
 | `structuredOutput` | `object` | JSON schema for response formatting |
 | `secrets` | `object` | Secure key-value data injection |
 | `allowedDomains` | `string[]` | Navigation restrictions |
 | `metadata` | `object` | Custom tracking pairs |
 | `judge` | `boolean` | AI-powered success validation |
+| `judgeGroundTruth` | `string` | Ground truth for judge evaluation |
+| `judgeLlm` | `string` | Model for judge evaluation |
+| `skillIds` | `string[]` | Pre-built skill IDs to use |
 
 ## License
 
