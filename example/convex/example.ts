@@ -5,21 +5,6 @@ import { v } from "convex/values";
 
 const browserUse = new BrowserUse(components.browserUse);
 
-export const runTask = action({
-  args: {
-    task: v.string(),
-    startUrl: v.optional(v.string()),
-  },
-  returns: v.any(),
-  handler: async (ctx, args) => {
-    const result = await browserUse.createTaskAndPoll(ctx, {
-      task: args.task,
-      startUrl: args.startUrl,
-    });
-    return result;
-  },
-});
-
 export const createTask = action({
   args: {
     task: v.string(),

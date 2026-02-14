@@ -65,30 +65,6 @@ export class BrowserUse {
     });
   }
 
-  async createTaskAndPoll(
-    ctx: ActionCtx,
-    args: {
-      task: string;
-      sessionId?: string;
-      startUrl?: string;
-      llm?: string;
-      maxSteps?: number;
-      flashMode?: boolean;
-      thinking?: boolean;
-      vision?: boolean | "auto";
-      structuredOutput?: unknown;
-      metadata?: Record<string, string>;
-      secrets?: Record<string, string>;
-      allowedDomains?: string[];
-      systemPromptExtension?: string;
-    },
-  ) {
-    return await ctx.runAction(this.component.tasks.createAndPoll, {
-      apiKey: this.apiKey,
-      ...args,
-    });
-  }
-
   async getTask(ctx: QueryCtx, args: { taskId: string }) {
     return await ctx.runQuery(this.component.tasks.get, {
       taskId: args.taskId as never,
@@ -134,13 +110,6 @@ export class BrowserUse {
 
   async stopTask(ctx: ActionCtx, args: { externalId: string }) {
     return await ctx.runAction(this.component.tasks.stop, {
-      apiKey: this.apiKey,
-      externalId: args.externalId,
-    });
-  }
-
-  async pollTaskUntilDone(ctx: ActionCtx, args: { externalId: string }) {
-    return await ctx.runAction(this.component.tasks.pollUntilDone, {
       apiKey: this.apiKey,
       externalId: args.externalId,
     });

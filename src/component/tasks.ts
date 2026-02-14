@@ -5,17 +5,11 @@ import {
   internalQuery,
   query,
 } from "./_generated/server.js";
-import { api, internal } from "./_generated/api.js";
+import { internal } from "./_generated/api.js";
 import type { Id } from "./_generated/dataModel.js";
 import { browserUseRequest } from "./request.js";
 import { taskStatus } from "./schema.js";
-import {
-  DEFAULT_LLM,
-  DEFAULT_MAX_STEPS,
-  TASK_TERMINAL_STATUSES,
-  POLL_INTERVAL_MS,
-  MAX_POLL_ATTEMPTS,
-} from "./constants.js";
+import { DEFAULT_LLM, DEFAULT_MAX_STEPS } from "./constants.js";
 
 // ------- Types for Browser Use API responses -------
 
@@ -412,115 +406,6 @@ export const stop = action({
     }
 
     return null;
-  },
-});
-
-export const pollUntilDone = action({
-  args: {
-    apiKey: v.string(),
-    externalId: v.string(),
-  },
-  returns: v.object({
-    status: v.string(),
-    output: v.optional(v.string()),
-    isSuccess: v.optional(v.boolean()),
-  }),
-  handler: async (ctx, args): Promise<{
-    status: string;
-    output?: string;
-    isSuccess?: boolean;
-  }> => {
-    for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
-      const result = await browserUseRequest<TaskStatusResponse>({
-        method: "GET",
-        path: `/api/v2/tasks/${args.externalId}/status`,
-        apiKey: args.apiKey,
-      });
-
-      const normalizedStatus = normalizeStatus(result.status);
-
-      if (
-        TASK_TERMINAL_STATUSES.includes(
-          normalizedStatus as (typeof TASK_TERMINAL_STATUSES)[number],
-        )
-      ) {
-        const existingTask = (await ctx.runQuery(
-          internal.tasks.getByExternalId,
-          { externalId: args.externalId },
-        )) as Record<string, unknown> | null;
-
-        if (existingTask) {
-          await ctx.runMutation(internal.tasks.saveTask, {
-            externalId: args.externalId,
-            task: (existingTask.task as string) ?? "",
-            status: normalizedStatus,
-            output: result.output ?? undefined,
-            isSuccess: result.isSuccess ?? undefined,
-          });
-        }
-
-        return {
-          status: result.status,
-          output: result.output ?? undefined,
-          isSuccess: result.isSuccess ?? undefined,
-        };
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-    }
-
-    throw new Error(
-      `Task ${args.externalId} did not complete within the maximum poll attempts`,
-    );
-  },
-});
-
-export const createAndPoll = action({
-  args: {
-    apiKey: v.string(),
-    task: v.string(),
-    sessionId: v.optional(v.string()),
-    startUrl: v.optional(v.string()),
-    llm: v.optional(v.string()),
-    maxSteps: v.optional(v.number()),
-    flashMode: v.optional(v.boolean()),
-    thinking: v.optional(v.boolean()),
-    vision: v.optional(v.union(v.boolean(), v.literal("auto"))),
-    structuredOutput: v.optional(v.any()),
-    metadata: v.optional(v.any()),
-    secrets: v.optional(v.any()),
-    allowedDomains: v.optional(v.array(v.string())),
-    systemPromptExtension: v.optional(v.string()),
-  },
-  returns: v.object({
-    taskId: v.id("tasks"),
-    externalId: v.string(),
-    status: v.string(),
-    output: v.optional(v.string()),
-    isSuccess: v.optional(v.boolean()),
-  }),
-  handler: async (ctx, args): Promise<{
-    taskId: Id<"tasks">;
-    externalId: string;
-    status: string;
-    output?: string;
-    isSuccess?: boolean;
-  }> => {
-    const createResult = (await ctx.runAction(
-      api.tasks.create,
-      args,
-    )) as { taskId: Id<"tasks">; externalId: string; sessionId: string };
-
-    const pollResult = (await ctx.runAction(api.tasks.pollUntilDone, {
-      apiKey: args.apiKey,
-      externalId: createResult.externalId,
-    })) as { status: string; output?: string; isSuccess?: boolean };
-
-    return {
-      taskId: createResult.taskId,
-      externalId: createResult.externalId,
-      ...pollResult,
-    };
   },
 });
 
