@@ -1,4 +1,4 @@
-import { BrowserUse } from "../../src/client/index.js";
+import { BrowserUse } from "browser-use-convex-component";
 import { components } from "./_generated/api.js";
 import { action, query } from "./_generated/server.js";
 import { v } from "convex/values";

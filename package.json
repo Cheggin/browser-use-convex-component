@@ -2,11 +2,18 @@
   "name": "browser-use-convex-component",
   "version": "0.1.0",
   "description": "A Convex component for Browser Use Cloud - automate browser tasks with AI agents",
+  "repository": "github:Cheggin/browser-use-convex-component",
+  "homepage": "https://github.com/Cheggin/browser-use-convex-component#readme",
+  "bugs": {
+    "url": "https://github.com/Cheggin/browser-use-convex-component/issues"
+  },
   "license": "MIT",
+  "keywords": ["convex", "component", "browser-use", "browser-automation"],
   "type": "module",
-  "main": "./dist/client/index.js",
   "types": "./dist/client/index.d.ts",
+  "module": "./dist/client/index.js",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "types": "./dist/client/index.d.ts",
       "default": "./dist/client/index.js"
@@ -15,26 +22,31 @@
       "types": "./dist/component/convex.config.d.ts",
       "default": "./dist/component/convex.config.js"
     },
-    "./_generated/component.js": {
-      "types": "./dist/component/_generated/component.d.ts",
-      "default": "./dist/component/_generated/component.js"
+    "./convex.config": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
     },
-    "./test": {
-      "types": "./src/test.ts",
-      "default": "./src/test.ts"
-    }
+    "./_generated/component.js": {
+      "types": "./dist/component/_generated/component.d.ts"
+    },
+    "./_generated/component": {
+      "types": "./dist/component/_generated/component.d.ts"
+    },
+    "./test": "./src/test.ts"
   },
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "build:codegen": "npx convex codegen --component-dir ./src/component",
-    "build": "npm run build:codegen && tsc",
+    "predev": "npm run build:codegen",
+    "dev": "npm-run-all --parallel dev:codegen dev:tsc dev:backend",
     "dev:codegen": "npx convex codegen --component-dir ./src/component --watch",
     "dev:tsc": "tsc --watch",
-    "dev:backend": "cd example && npx convex dev",
-    "dev": "npm-run-all --parallel dev:codegen dev:tsc dev:backend",
+    "dev:backend": "npx convex dev --typecheck-components",
+    "build:codegen": "npx convex codegen --component-dir ./src/component",
+    "build": "npm run build:codegen && tsc",
+    "build:clean": "rm -rf dist *.tsbuildinfo && npm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
