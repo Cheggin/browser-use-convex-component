@@ -1,6 +1,6 @@
 {
   "name": "browser-use-convex-component",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Convex component for Browser Use Cloud - automate browser tasks with AI agents",
   "repository": "github:Cheggin/browser-use-convex-component",
   "homepage": "https://github.com/Cheggin/browser-use-convex-component#readme",
@@ -8,7 +8,12 @@
     "url": "https://github.com/Cheggin/browser-use-convex-component/issues"
   },
   "license": "MIT",
-  "keywords": ["convex", "component", "browser-use", "browser-automation"],
+  "keywords": [
+    "convex",
+    "component",
+    "browser-use",
+    "browser-automation"
+  ],
   "type": "module",
   "types": "./dist/client/index.d.ts",
   "module": "./dist/client/index.js",
